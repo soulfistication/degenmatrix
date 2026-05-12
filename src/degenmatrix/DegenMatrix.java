@@ -72,37 +72,37 @@ public class DegenMatrix {
                 }
                 
                 String value1 = columns[0];
-                System.out.println(value1);
+                System.out.println("" + convert(value1));
                 String value2 = columns[1];
-                System.out.println(value2);
+                System.out.println("" + convert(value2));
                 String value3 = columns[2];
-                System.out.println(value3);
+                System.out.println("" + convert(value3));
                 String value4 = columns[3];
-                System.out.println(value4);
+                System.out.println("" + convert(value4));
                 String value5 = columns[4];
-                System.out.println(value5);
+                System.out.println("" + convert(value5));
                 String value6 = columns[5];
-                System.out.print(value6);
+                System.out.println("" + convert(value6));
                 String value7 = columns[6];
-                System.out.println(value7);
+                System.out.println("" + convert(value7));
                 String value8 = columns[7];
-                System.out.println(value8);
+                System.out.println("" + convert(value8));
                 String value9 = columns[8];
-                System.out.println(value9);
+                System.out.println("" + convert(value9));
                 String value10 = columns[9];
-                System.out.println(value10);
+                System.out.println("" + convert(value10));
                 String value11 = columns[10];
-                System.out.println(value11);
+                System.out.println("" + convert(value11));
                 String value12 = columns[11];
-                System.out.println(value12);
+                System.out.println("" + convert(value12));
                 String value13 = columns[12];
-                System.out.println(value13);
+                System.out.println("" + convert(value13));
                 String value14 = columns[13];
-                System.out.println(value14);
+                System.out.println("" + convert(value14));
                 String value15 = columns[14];
-                System.out.println(value15);
+                System.out.println("" + convert(value15));
                 String value16 = columns[15];
-                System.out.println(value16);
+                System.out.println("" + convert(value16));
                 
                 writer1.write("" + convert(value1) + newLine);
                 writer2.write("" + convert(value2) + newLine);
@@ -150,16 +150,17 @@ public class DegenMatrix {
 
     }
     
-    private static double convert(String pointString) {
-        double error = -99999999999999.999999999;
+    private static int convert(String pointString) {
+        int error = 0;
         if (pointString == null) {
+            System.out.println("Point string was null");
             return error;
         }
         try {
             double point = Double.parseDouble(pointString);
             double converted = point * 10;
             int integer = (int)converted;
-            return converted;
+            return integer;
         } catch (NumberFormatException nfe) {
             System.out.println("Error reading point: " + pointString);
         }
