@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 /**
  *
@@ -19,7 +20,7 @@ import java.io.IOException;
  */
 public class DegenMatrix {
     
-    public static String programVersion = "1.0.1";
+    public static String programVersion = "1.0.0";
     
     public static String pathSeparator = File.separator;
     
@@ -31,19 +32,27 @@ public class DegenMatrix {
         return System.getProperty("user.dir");
     }
     
-    // protected static int numberOfLines = 102 * 256;
-    
     protected static int numberOfColumns = 16;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Running degenmatrix on: " + getCurrentDirectory());
-        String prefix = "ESOCEP";
+        System.out.println("DegenMatrix ver: " + programVersion);
+        
+        System.out.println("Input two letters for name: ");
+        
+        Scanner keyboard = new Scanner(System.in);
+        String name = keyboard.nextLine();
+        
+        System.out.println("Input two letters for condition: ");
+        String condition = keyboard.nextLine();
+        
+        String prefix = name + condition + "EP";
+        String inputFileName = "EG";
         String extension = ".DAT";
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(getCurrentDirectory() + pathSeparator + "EG.DAT"));
+            BufferedReader reader = new BufferedReader(new FileReader(getCurrentDirectory() + pathSeparator + inputFileName + extension));
             BufferedWriter writer1 = new BufferedWriter(new FileWriter(getCurrentDirectory() + pathSeparator + prefix + "F1" + extension));
             BufferedWriter writer2 = new BufferedWriter(new FileWriter(getCurrentDirectory() + pathSeparator + prefix + "F3" + extension));
             BufferedWriter writer3 = new BufferedWriter(new FileWriter(getCurrentDirectory() + pathSeparator + prefix + "C3" + extension));
