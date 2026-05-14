@@ -19,19 +19,19 @@ import java.io.IOException;
  */
 public class DegenMatrix {
     
-    public static String programVersion = "1.0.0";
+    public static String programVersion = "1.0.1";
     
     public static String pathSeparator = File.separator;
     
-    public static String elementSeparator = "  ";
+    public static String elementSeparator = "\t";
     
-    public static String newLine = "\n";
+    protected static String newLine = System.getProperty("line.separator");
     
     protected static String getCurrentDirectory() {
         return System.getProperty("user.dir");
     }
     
-    protected static int numberOfLines = 102 * 256;
+    // protected static int numberOfLines = 102 * 256;
     
     protected static int numberOfColumns = 16;
 
@@ -43,7 +43,7 @@ public class DegenMatrix {
         String prefix = "ESOCEP";
         String extension = ".DAT";
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(getCurrentDirectory() + pathSeparator + "EG.TXT"));
+            BufferedReader reader = new BufferedReader(new FileReader(getCurrentDirectory() + pathSeparator + "EG.DAT"));
             BufferedWriter writer1 = new BufferedWriter(new FileWriter(getCurrentDirectory() + pathSeparator + prefix + "F1" + extension));
             BufferedWriter writer2 = new BufferedWriter(new FileWriter(getCurrentDirectory() + pathSeparator + prefix + "F3" + extension));
             BufferedWriter writer3 = new BufferedWriter(new FileWriter(getCurrentDirectory() + pathSeparator + prefix + "C3" + extension));
@@ -61,48 +61,52 @@ public class DegenMatrix {
             BufferedWriter writer15 = new BufferedWriter(new FileWriter(getCurrentDirectory() + pathSeparator + prefix + "T4" + extension));
             BufferedWriter writer16 = new BufferedWriter(new FileWriter(getCurrentDirectory() + pathSeparator + prefix + "T6" + extension));
             
-            for (int i = 0; i < numberOfLines; i++) {
-                String line = reader.readLine();
-                System.out.println(line);
+            String line = reader.readLine();
+            
+            while (line != null) {
+                if (line.startsWith("[")) {
+                    line = reader.readLine();
+                    continue;
+                }
                 
                 String[] columns = line.split(elementSeparator);
                 
                 if (columns.length != numberOfColumns) {
-                    System.out.println("Matrix does not have 16 colmuns.");
+                    System.out.println("WARNING: Matrix does not have 16 colmuns.");
                 }
                 
                 String value1 = columns[0];
-                System.out.println("" + convert(value1));
+                //System.out.println("" + convert(value1));
                 String value2 = columns[1];
-                System.out.println("" + convert(value2));
+                //System.out.println("" + convert(value2));
                 String value3 = columns[2];
-                System.out.println("" + convert(value3));
+                //System.out.println("" + convert(value3));
                 String value4 = columns[3];
-                System.out.println("" + convert(value4));
+                //System.out.println("" + convert(value4));
                 String value5 = columns[4];
-                System.out.println("" + convert(value5));
+                //System.out.println("" + convert(value5));
                 String value6 = columns[5];
-                System.out.println("" + convert(value6));
+                //System.out.println("" + convert(value6));
                 String value7 = columns[6];
-                System.out.println("" + convert(value7));
+                //System.out.println("" + convert(value7));
                 String value8 = columns[7];
-                System.out.println("" + convert(value8));
+                //System.out.println("" + convert(value8));
                 String value9 = columns[8];
-                System.out.println("" + convert(value9));
+                //System.out.println("" + convert(value9));
                 String value10 = columns[9];
-                System.out.println("" + convert(value10));
+                //System.out.println("" + convert(value10));
                 String value11 = columns[10];
-                System.out.println("" + convert(value11));
+                //System.out.println("" + convert(value11));
                 String value12 = columns[11];
-                System.out.println("" + convert(value12));
+                //System.out.println("" + convert(value12));
                 String value13 = columns[12];
-                System.out.println("" + convert(value13));
+                //System.out.println("" + convert(value13));
                 String value14 = columns[13];
-                System.out.println("" + convert(value14));
+                //System.out.println("" + convert(value14));
                 String value15 = columns[14];
-                System.out.println("" + convert(value15));
+                //System.out.println("" + convert(value15));
                 String value16 = columns[15];
-                System.out.println("" + convert(value16));
+                //System.out.println("" + convert(value16));
                 
                 writer1.write("" + convert(value1) + newLine);
                 writer2.write("" + convert(value2) + newLine);
@@ -120,6 +124,8 @@ public class DegenMatrix {
                 writer14.write("" + convert(value14) + newLine);
                 writer15.write("" + convert(value15) + newLine);
                 writer16.write("" + convert(value16) + newLine);
+            
+                line = reader.readLine();
             }
             
             reader.close();
