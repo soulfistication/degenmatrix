@@ -39,7 +39,7 @@ public class DegenMatrixFrame extends JFrame {
     private final JTextField matrixFileField = new JTextField(28);
     private final JTextField outputDirField = new JTextField(28);
     private final JTextArea logArea = new JTextArea(6, 50);
-    private final HeadMapPanel headMapPanel;
+    //private final HeadMapPanel headMapPanel;
     private final JRadioButton matrixModeButton = new JRadioButton("Single matrix file (16 columns)", true);
     private final JRadioButton electrodesModeButton = new JRadioButton("16 separate electrode files", false);
 
@@ -53,7 +53,7 @@ public class DegenMatrixFrame extends JFrame {
         setMinimumSize(new Dimension(720, 720));
         setLocationRelativeTo(null);
 
-        headMapPanel = new HeadMapPanel(this::onBrowseElectrode);
+        //headMapPanel = new HeadMapPanel(this::onBrowseElectrode);
         buildUi();
         updatePrefixFromPatientFields();
         refreshInputMode();
@@ -185,10 +185,10 @@ public class DegenMatrixFrame extends JFrame {
         matrixRow.add(browseMatrixButton, gbc);
         center.add(matrixRow, BorderLayout.CENTER);
 
-        JPanel headWrapper = new JPanel(new BorderLayout());
-        headWrapper.setBorder(BorderFactory.createTitledBorder("EEG cap — select one .DAT per electrode"));
-        headWrapper.add(headMapPanel, BorderLayout.CENTER);
-        center.add(headWrapper, BorderLayout.SOUTH);
+        //JPanel headWrapper = new JPanel(new BorderLayout());
+        //headWrapper.setBorder(BorderFactory.createTitledBorder("EEG cap — select one .DAT per electrode"));
+        //headWrapper.add(headMapPanel, BorderLayout.CENTER);
+        //center.add(headWrapper, BorderLayout.SOUTH);
 
         return center;
     }
@@ -256,26 +256,26 @@ public class DegenMatrixFrame extends JFrame {
         if (browseMatrixButton != null) {
             browseMatrixButton.setEnabled(matrix);
         }
-        headMapPanel.setElectrodesEnabled(!matrix);
+        //headMapPanel.setElectrodesEnabled(!matrix);
     }
 
     private void onBrowseElectrode(ActionEvent event) {
-        if (matrixModeButton.isSelected()) {
-            return;
-        }
-        int index = headMapPanel.electrodeIndexFromSource(event.getSource());
-        if (index < 0) {
-            return;
-        }
-        JFileChooser chooser = createDatChooser("Select input for "
-                + DegenMatrixProcessor.ELECTRODE_LABELS[index]);
-        File current = headMapPanel.getElectrodeFile(index);
-        if (current != null) {
-            chooser.setSelectedFile(current);
-        }
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            headMapPanel.setElectrodeFile(index, chooser.getSelectedFile());
-        }
+//        if (matrixModeButton.isSelected()) {
+//            return;
+//        }
+//        int index = headMapPanel.electrodeIndexFromSource(event.getSource());
+//        if (index < 0) {
+//            return;
+//        }
+//        JFileChooser chooser = createDatChooser("Select input for "
+//                + DegenMatrixProcessor.ELECTRODE_LABELS[index]);
+//        File current = headMapPanel.getElectrodeFile(index);
+//        if (current != null) {
+//            chooser.setSelectedFile(current);
+//        }
+//        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+//            headMapPanel.setElectrodeFile(index, chooser.getSelectedFile());
+//        }
     }
 
     private void browseMatrixFile() {
@@ -336,17 +336,17 @@ public class DegenMatrixFrame extends JFrame {
             return;
         }
         if (mode == InputMode.ELECTRODES) {
-            File[] files = headMapPanel.getAllElectrodeFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i] == null) {
-                    JOptionPane.showMessageDialog(this,
-                            "Select input .DAT for electrode "
-                                    + DegenMatrixProcessor.ELECTRODE_LABELS[i] + ".",
-                            "Missing input",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-            }
+//            File[] files = headMapPanel.getAllElectrodeFiles();
+//            for (int i = 0; i < files.length; i++) {
+//                if (files[i] == null) {
+//                    JOptionPane.showMessageDialog(this,
+//                            "Select input .DAT for electrode "
+//                                    + DegenMatrixProcessor.ELECTRODE_LABELS[i] + ".",
+//                            "Missing input",
+//                            JOptionPane.WARNING_MESSAGE);
+//                    return;
+//                }
+//            }
         }
 
         logArea.setText("");
@@ -362,11 +362,11 @@ public class DegenMatrixFrame extends JFrame {
                             prefix,
                             this::publish);
                 } else {
-                    DegenMatrixProcessor.processFromElectrodeFiles(
-                            headMapPanel.getAllElectrodeFiles(),
-                            outputDirectory,
-                            prefix,
-                            this::publish);
+//                    DegenMatrixProcessor.processFromElectrodeFiles(
+//                            headMapPanel.getAllElectrodeFiles(),
+//                            outputDirectory,
+//                            prefix,
+//                            this::publish);
                 }
                 return null;
             }
