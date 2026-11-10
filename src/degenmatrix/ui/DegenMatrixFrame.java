@@ -30,8 +30,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class DegenMatrixFrame extends JFrame {
 
     private enum InputMode {
-        MATRIX, ELECTRODES
+        CHANNELS8, CHANNELS16, CHANNELS19
     }
+    
+    private InputMode mode = InputMode.CHANNELS16;
 
     private final JTextField patientNameField = new JTextField(4);
     private final JTextField conditionField = new JTextField(4);
@@ -39,9 +41,9 @@ public class DegenMatrixFrame extends JFrame {
     private final JTextField matrixFileField = new JTextField(28);
     private final JTextField outputDirField = new JTextField(28);
     private final JTextArea logArea = new JTextArea(6, 50);
-    //private final HeadMapPanel headMapPanel;
-    private final JRadioButton matrixModeButton = new JRadioButton("Single matrix file (16 columns)", true);
-    private final JRadioButton electrodesModeButton = new JRadioButton("16 separate electrode files", false);
+    private final JRadioButton channels8RadioButton = new JRadioButton("8 channels", false);
+    private final JRadioButton channels16RadioButton = new JRadioButton("16 channels", true);
+    private final JRadioButton channels19RadioButton = new JRadioButton("19 channels", false);
 
     private File matrixInputFile;
     private File outputDirectory;
@@ -53,10 +55,13 @@ public class DegenMatrixFrame extends JFrame {
         setMinimumSize(new Dimension(720, 720));
         setLocationRelativeTo(null);
 
-        //headMapPanel = new HeadMapPanel(this::onBrowseElectrode);
         buildUi();
         updatePrefixFromPatientFields();
         refreshInputMode();
+        
+        // Setup MatrixFields
+        matrixFileField.setEnabled(true);
+        browseMatrixButton.setEnabled(true);
     }
 
     private void buildUi() {
@@ -154,14 +159,17 @@ public class DegenMatrixFrame extends JFrame {
         JPanel center = new JPanel(new BorderLayout(8, 8));
 
         JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 4));
-        modePanel.setBorder(BorderFactory.createTitledBorder("Input mode"));
+        modePanel.setBorder(BorderFactory.createTitledBorder("Number of Channels"));
         ButtonGroup group = new ButtonGroup();
-        group.add(matrixModeButton);
-        group.add(electrodesModeButton);
-        matrixModeButton.addActionListener(e -> refreshInputMode());
-        electrodesModeButton.addActionListener(e -> refreshInputMode());
-        modePanel.add(matrixModeButton);
-        modePanel.add(electrodesModeButton);
+        group.add(channels8RadioButton);
+        group.add(channels16RadioButton);
+        group.add(channels19RadioButton);
+        channels8RadioButton.addActionListener(e -> refreshInputMode());
+        channels16RadioButton.addActionListener(e -> refreshInputMode());
+        channels19RadioButton.addActionListener(e -> refreshInputMode());
+        modePanel.add(channels8RadioButton);
+        modePanel.add(channels16RadioButton);
+        modePanel.add(channels19RadioButton);
         center.add(modePanel, BorderLayout.NORTH);
 
         JPanel matrixRow = new JPanel(new GridBagLayout());
@@ -184,12 +192,6 @@ public class DegenMatrixFrame extends JFrame {
         browseMatrixButton.addActionListener(e -> browseMatrixFile());
         matrixRow.add(browseMatrixButton, gbc);
         center.add(matrixRow, BorderLayout.CENTER);
-
-        //JPanel headWrapper = new JPanel(new BorderLayout());
-        //headWrapper.setBorder(BorderFactory.createTitledBorder("EEG cap — select one .DAT per electrode"));
-        //headWrapper.add(headMapPanel, BorderLayout.CENTER);
-        //center.add(headWrapper, BorderLayout.SOUTH);
-
         return center;
     }
 
@@ -251,31 +253,26 @@ public class DegenMatrixFrame extends JFrame {
     }
 
     private void refreshInputMode() {
-        boolean matrix = matrixModeButton.isSelected();
-        matrixFileField.setEnabled(matrix);
-        if (browseMatrixButton != null) {
-            browseMatrixButton.setEnabled(matrix);
+        boolean is8ChannelsSelected = channels8RadioButton.isSelected();
+        boolean is16ChannelsSelected = channels16RadioButton.isSelected();
+        boolean is19ChannelsSelected = channels19RadioButton.isSelected();
+        
+        if (is8ChannelsSelected) {
+            mode = InputMode.CHANNELS8;
+            return;
         }
-        //headMapPanel.setElectrodesEnabled(!matrix);
+        
+        if (is16ChannelsSelected) {
+            mode = InputMode.CHANNELS16;
+            return;
+        }
+        
+        if (is19ChannelsSelected) {
+            mode = InputMode.CHANNELS19;
+        }
     }
 
     private void onBrowseElectrode(ActionEvent event) {
-//        if (matrixModeButton.isSelected()) {
-//            return;
-//        }
-//        int index = headMapPanel.electrodeIndexFromSource(event.getSource());
-//        if (index < 0) {
-//            return;
-//        }
-//        JFileChooser chooser = createDatChooser("Select input for "
-//                + DegenMatrixProcessor.ELECTRODE_LABELS[index]);
-//        File current = headMapPanel.getElectrodeFile(index);
-//        if (current != null) {
-//            chooser.setSelectedFile(current);
-//        }
-//        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-//            headMapPanel.setElectrodeFile(index, chooser.getSelectedFile());
-//        }
     }
 
     private void browseMatrixFile() {
@@ -327,26 +324,12 @@ public class DegenMatrixFrame extends JFrame {
             return;
         }
 
-        final InputMode mode = matrixModeButton.isSelected() ? InputMode.MATRIX : InputMode.ELECTRODES;
-        if (mode == InputMode.MATRIX && matrixInputFile == null) {
+        if (matrixInputFile == null) {
             JOptionPane.showMessageDialog(this,
                     "Select the matrix input .DAT file.",
                     "Missing input",
                     JOptionPane.WARNING_MESSAGE);
             return;
-        }
-        if (mode == InputMode.ELECTRODES) {
-//            File[] files = headMapPanel.getAllElectrodeFiles();
-//            for (int i = 0; i < files.length; i++) {
-//                if (files[i] == null) {
-//                    JOptionPane.showMessageDialog(this,
-//                            "Select input .DAT for electrode "
-//                                    + DegenMatrixProcessor.ELECTRODE_LABELS[i] + ".",
-//                            "Missing input",
-//                            JOptionPane.WARNING_MESSAGE);
-//                    return;
-//                }
-//            }
         }
 
         logArea.setText("");
@@ -355,18 +338,24 @@ public class DegenMatrixFrame extends JFrame {
         SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
             @Override
             protected Void doInBackground() throws Exception {
-                if (mode == InputMode.MATRIX) {
+                if (mode == InputMode.CHANNELS8) {
                     DegenMatrixProcessor.processFromMatrix(
-                            matrixInputFile,
+                            matrixInputFile, 8,
+                            outputDirectory,
+                            prefix,
+                            this::publish);
+                } if (mode == InputMode.CHANNELS16) {
+                    DegenMatrixProcessor.processFromMatrix(
+                            matrixInputFile, 16,
                             outputDirectory,
                             prefix,
                             this::publish);
                 } else {
-//                    DegenMatrixProcessor.processFromElectrodeFiles(
-//                            headMapPanel.getAllElectrodeFiles(),
-//                            outputDirectory,
-//                            prefix,
-//                            this::publish);
+                    DegenMatrixProcessor.processFromMatrix(
+                            matrixInputFile, 19,
+                            outputDirectory,
+                            prefix,
+                            this::publish);
                 }
                 return null;
             }
