@@ -3,7 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/DegenMatrix/src/degenmatrix/DegenMatrix.java</file>
+            <file>file:/C:/Users/Ivan/code/degenmatrix/src/degenmatrix/DegenMatrix.java</file>
+            <file>file:/C:/Users/Ivan/code/degenmatrix/src/degenmatrix/DegenMatrixProcessor.java</file>
+            <file>file:/C:/Users/Ivan/code/degenmatrix/src/degenmatrix/ui/DegenMatrixFrame.java</file>
         </group>
     </open-files>
 </project-private>
