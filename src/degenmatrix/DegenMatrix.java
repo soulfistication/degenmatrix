@@ -35,13 +35,16 @@ public class DegenMatrix {
         String name = keyboard.nextLine();
         System.out.println("Input two letters for condition: ");
         String condition = keyboard.nextLine();
+        System.out.println("Input number of channels (8/16/19");
+        String channels = keyboard.nextLine();
+        int numberOfChannels = Integer.parseInt(channels);
 
         String prefix = DegenMatrixProcessor.buildOutputPrefix(name, condition);
         java.io.File input = new java.io.File(System.getProperty("user.dir"), "EG.DAT");
         java.io.File outputDir = new java.io.File(System.getProperty("user.dir"));
 
         try {
-            DegenMatrixProcessor.processFromMatrix(input, outputDir, prefix, System.out::println);
+            DegenMatrixProcessor.processFromMatrix(input, numberOfChannels, outputDir, prefix, System.out::println);
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
         } finally {
