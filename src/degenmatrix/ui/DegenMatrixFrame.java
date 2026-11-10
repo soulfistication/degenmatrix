@@ -344,7 +344,7 @@ public class DegenMatrixFrame extends JFrame {
                             outputDirectory,
                             prefix,
                             this::publish);
-                } if (mode == InputMode.CHANNELS16) {
+                } else if (mode == InputMode.CHANNELS16) {
                     DegenMatrixProcessor.processFromMatrix(
                             matrixInputFile, 16,
                             outputDirectory,
