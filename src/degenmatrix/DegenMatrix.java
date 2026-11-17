@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class DegenMatrix {
 
     /**
-     * @param args optional {@code --cli} to use the original console workflow
+     * @param args optional {@code --cli} to use the original console work flow
      */
     public static void main(String[] args) {
         boolean useCli = false;
