@@ -37,7 +37,8 @@ public class DegenMatrixFrame extends JFrame {
 
     private final JTextField patientNameField = new JTextField(4);
     private final JTextField conditionField = new JTextField(4);
-    private final JTextField outputPrefixField = new JTextField(12);
+    private final JTextField otherConditionField = new JTextField(4);
+    private final JTextField outputPrefixField = new JTextField(4);
     private final JTextField matrixFileField = new JTextField(28);
     private final JTextField outputDirField = new JTextField(28);
     private final JTextArea logArea = new JTextArea(6, 50);
@@ -85,6 +86,8 @@ public class DegenMatrixFrame extends JFrame {
 
         patientNameField.setToolTipText("Two-letter patient code (used in output file prefix)");
         conditionField.setToolTipText("Two-letter condition code");
+        outputPrefixField.setToolTipText("Prefix for output files, e.g. ABCDEP → ABCDEF1.DAT");
+        otherConditionField.setToolTipText("Two-letter code for other prefix");
         patientNameField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             private void changed() {
                 updatePrefixFromPatientFields();
@@ -146,10 +149,18 @@ public class DegenMatrixFrame extends JFrame {
         gbc.weightx = 0;
         panel.add(new JLabel("Output prefix:"), gbc);
         gbc.gridx = 1;
-        gbc.gridwidth = 3;
-        gbc.weightx = 1;
-        outputPrefixField.setToolTipText("Prefix for output files, e.g. ABCDEP → ABCDEF1.DAT");
+        gbc.gridy = 1;
+        gbc.weightx = 0.2;
         panel.add(outputPrefixField, gbc);
+        
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.weightx = 0;
+        panel.add(new JLabel("Other condition:"), gbc);
+        gbc.gridx = 3;
+        gbc.weightx = 0.2;
+        panel.add(otherConditionField, gbc);
+        
         gbc.gridwidth = 1;
 
         return panel;
