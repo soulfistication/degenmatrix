@@ -3,6 +3,7 @@ package degenmatrix.ui;
 import degenmatrix.DegenMatrixProcessor;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -10,6 +11,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -46,6 +49,11 @@ public class DegenMatrixFrame extends JFrame {
     private final JRadioButton channels8RadioButton = new JRadioButton("8 channels", false);
     private final JRadioButton channels16RadioButton = new JRadioButton("16 channels", true);
     private final JRadioButton channels19RadioButton = new JRadioButton("19 channels", false);
+    
+    // Delimiter switch: false = Comma separated values, true = Tab separated values
+    private final UISwitch delimiterSwitch = new UISwitch();
+    private final JLabel commaLabel = new JLabel("Comma separated values");
+    private final JLabel tabLabel = new JLabel("Tab separated values");
 
     private File matrixInputFile;
     private File outputDirectory;
@@ -60,6 +68,7 @@ public class DegenMatrixFrame extends JFrame {
         buildUi();
         updatePrefixFromPatientFields();
         refreshInputMode();
+        updateDelimiterLabelStyles();
         
         // Setup MatrixFields
         matrixFileField.setEnabled(true);
@@ -189,8 +198,11 @@ public class DegenMatrixFrame extends JFrame {
     private JPanel buildCenterPanel() {
         JPanel center = new JPanel(new BorderLayout(8, 8));
 
-        JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 4));
+        JPanel modePanel = new JPanel(new BorderLayout(8, 4));
         modePanel.setBorder(BorderFactory.createTitledBorder("Number of Channels"));
+
+        // Left side: Channel radio buttons
+        JPanel channelsGroupPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
         ButtonGroup group = new ButtonGroup();
         group.add(channels8RadioButton);
         group.add(channels16RadioButton);
@@ -198,9 +210,39 @@ public class DegenMatrixFrame extends JFrame {
         channels8RadioButton.addActionListener(e -> refreshInputMode());
         channels16RadioButton.addActionListener(e -> refreshInputMode());
         channels19RadioButton.addActionListener(e -> refreshInputMode());
-        modePanel.add(channels8RadioButton);
-        modePanel.add(channels16RadioButton);
-        modePanel.add(channels19RadioButton);
+        channelsGroupPanel.add(channels8RadioButton);
+        channelsGroupPanel.add(channels16RadioButton);
+        channelsGroupPanel.add(channels19RadioButton);
+
+        // Right side: Delimiter UISwitch with flanking labels
+        JPanel delimiterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
+        commaLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        tabLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        commaLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (delimiterSwitch.isSelected()) {
+                    delimiterSwitch.doClick();
+                }
+            }
+        });
+        tabLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!delimiterSwitch.isSelected()) {
+                    delimiterSwitch.doClick();
+                }
+            }
+        });
+        delimiterSwitch.addItemListener(e -> updateDelimiterLabelStyles());
+
+        delimiterPanel.add(commaLabel);
+        delimiterPanel.add(delimiterSwitch);
+        delimiterPanel.add(tabLabel);
+
+        modePanel.add(channelsGroupPanel, BorderLayout.WEST);
+        modePanel.add(delimiterPanel, BorderLayout.EAST);
         center.add(modePanel, BorderLayout.NORTH);
 
         JPanel matrixRow = new JPanel(new GridBagLayout());
@@ -224,6 +266,25 @@ public class DegenMatrixFrame extends JFrame {
         matrixRow.add(browseMatrixButton, gbc);
         center.add(matrixRow, BorderLayout.CENTER);
         return center;
+    }
+
+    private void updateDelimiterLabelStyles() {
+        boolean isTabSelected = delimiterSwitch.isSelected();
+        Font baseFont = commaLabel.getFont();
+        
+        commaLabel.setFont(baseFont.deriveFont(isTabSelected ? Font.PLAIN : Font.BOLD));
+        commaLabel.setForeground(isTabSelected ? Color.GRAY : Color.BLACK);
+        
+        tabLabel.setFont(baseFont.deriveFont(isTabSelected ? Font.BOLD : Font.PLAIN));
+        tabLabel.setForeground(isTabSelected ? Color.BLACK : Color.GRAY);
+    }
+
+    /**
+     * Helper method to query the selected delimiter in your processor call.
+     * @return true if Tab separated values is selected, false if Comma separated values is selected.
+     */
+    public boolean isTabSeparated() {
+        return delimiterSwitch.isSelected();
     }
 
     private JPanel buildBottomPanel() {
@@ -367,28 +428,22 @@ public class DegenMatrixFrame extends JFrame {
         logArea.setText("");
         appendLog("Processing…");
 
+        // Example usage of the switch state:
+        final boolean tabSeparated = isTabSeparated();
+
         SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
             @Override
             protected Void doInBackground() throws Exception {
-                if (mode == InputMode.CHANNELS8) {
-                    DegenMatrixProcessor.processFromMatrix(
-                            matrixInputFile, 8,
-                            outputDirectory,
-                            prefix,
-                            this::publish);
-                } else if (mode == InputMode.CHANNELS16) {
-                    DegenMatrixProcessor.processFromMatrix(
-                            matrixInputFile, 16,
-                            outputDirectory,
-                            prefix,
-                            this::publish);
-                } else {
-                    DegenMatrixProcessor.processFromMatrix(
-                            matrixInputFile, 19,
-                            outputDirectory,
-                            prefix,
-                            this::publish);
-                }
+                int channelCount = (mode == InputMode.CHANNELS8) ? 8 : (mode == InputMode.CHANNELS16 ? 16 : 19);
+                
+                // Pass `tabSeparated` (or `tabSeparated ? "\t" : ","`) to DegenMatrixProcessor if needed
+                DegenMatrixProcessor.processFromMatrix(
+                        matrixInputFile, 
+                        channelCount,
+                        outputDirectory,
+                        prefix,
+                        tabSeparated,
+                        this::publish);
                 return null;
             }
 

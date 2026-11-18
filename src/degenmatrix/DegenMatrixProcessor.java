@@ -39,6 +39,7 @@ public final class DegenMatrixProcessor {
             int numberOfChannels,
             File outputDirectory,
             String outputPrefix,
+            boolean isTabSeparated,
             Consumer<String> log) throws IOException {
         if (!matrixFile.isFile()) {
             throw new IOException("Matrix file not found: " + matrixFile);
