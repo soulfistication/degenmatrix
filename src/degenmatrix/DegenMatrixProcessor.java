@@ -26,8 +26,12 @@ public final class DegenMatrixProcessor {
     private DegenMatrixProcessor() {
     }
 
-    public static String buildOutputPrefix(String patientName, String condition) {
-        return patientName.trim() + condition.trim() + "EP";
+    public static String buildOutputPrefix(String patientName, String condition, String otherCondition) {
+        if (otherCondition.isEmpty()) {
+            return patientName.trim() + condition.trim() + "EP";
+        } else {
+            return patientName.trim() + condition.trim() + otherCondition.trim();
+        }
     }
 
     public static void processFromMatrix(

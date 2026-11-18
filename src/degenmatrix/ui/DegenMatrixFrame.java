@@ -25,6 +25,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class DegenMatrixFrame extends JFrame {
@@ -125,6 +126,25 @@ public class DegenMatrixFrame extends JFrame {
 
             @Override
             public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                changed();
+            }
+        });
+        otherConditionField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void changed() {
+                updatePrefixFromPatientFields();
+            }
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
                 changed();
             }
         });
@@ -258,8 +278,9 @@ public class DegenMatrixFrame extends JFrame {
     private void updatePrefixFromPatientFields() {
         String name = patientNameField.getText().trim();
         String condition = conditionField.getText().trim();
+        String otherCondition = otherConditionField.getText().trim();
         if (!name.isEmpty() || !condition.isEmpty()) {
-            outputPrefixField.setText(DegenMatrixProcessor.buildOutputPrefix(name, condition));
+            outputPrefixField.setText(DegenMatrixProcessor.buildOutputPrefix(name, condition, otherCondition));
         }
     }
 
