@@ -88,13 +88,20 @@ public final class DegenMatrixProcessor {
             throws IOException {
         BufferedWriter[] writers = new BufferedWriter[numberOfChannels];
         String[] electrodeLabels;
-        
-        if (numberOfChannels == 8) {
-            electrodeLabels = ELECTRODE8_LABELS;
-        } else if (numberOfChannels == 16) {
-            electrodeLabels = ELECTRODE16_LABELS;
-        } else {
-            electrodeLabels = ELECTRODE19_LABELS;
+
+        switch (numberOfChannels) {
+            case 8:
+                electrodeLabels = ELECTRODE8_LABELS;
+                break;
+            case 16:
+                electrodeLabels = ELECTRODE16_LABELS;
+                break;
+            case 19:
+                electrodeLabels = ELECTRODE19_LABELS;
+                break;
+            default:
+                electrodeLabels = ELECTRODE16_LABELS;
+                break;
         }
         
         for (int i = 0; i < numberOfChannels; i++) {
