@@ -13,12 +13,20 @@ import java.util.function.Consumer;
  */
 public final class DegenMatrixProcessor {
 
-    public static final String PROGRAM_VERSION = "1.1.0";
-    public static final String ELEMENT_SEPARATOR = "\t";
+    public static final String PROGRAM_VERSION = "1.2.0";
+    public static final String TAB_SEPARATOR = "\t";
+    public static final String COMMA_SEPARATOR = ",";
 
-    public static final String[] ELECTRODE_LABELS = {
+    public static final String[] ELECTRODE8_LABELS = {
+        "Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"
+    };
+    public static final String[] ELECTRODE16_LABELS = {
         "F1", "F3", "C3", "P3", "O1", "F7", "T3", "T5",
-        "F2", "F4", "C4", "P4", "O2", "F8", "T4", "T6", "Z1", "Z2", "Z3"
+        "F2", "F4", "C4", "P4", "O2", "F8", "T4", "T6"
+    };
+    public static final String[] ELECTRODE19_LABELS = {
+        "F1",  "F3", "C3", "P3", "O1", "F7", "T3", "T5",
+        "F2", "F4", "C4", "P4", "O2", "F8", "T4", "T6", "Fz", "Cz", "Pz"
     };
 
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -41,6 +49,9 @@ public final class DegenMatrixProcessor {
             String outputPrefix,
             boolean isTabSeparated,
             Consumer<String> log) throws IOException {
+        
+        String elementSeparator = isTabSeparated? TAB_SEPARATOR : COMMA_SEPARATOR;
+        
         if (!matrixFile.isFile()) {
             throw new IOException("Matrix file not found: " + matrixFile);
         }
@@ -59,7 +70,7 @@ public final class DegenMatrixProcessor {
                         continue;
                     }
                     row++;
-                    String[] columns = line.split(ELEMENT_SEPARATOR);
+                    String[] columns = line.split(elementSeparator);
                     for (int i = 0; i < numberOfChannels; i++) {
                         String value = columns[i];
                         writers[i].write(convert(value) + NEW_LINE);
@@ -76,8 +87,18 @@ public final class DegenMatrixProcessor {
     private static BufferedWriter[] openWriters(File outputDirectory, int numberOfChannels, String outputPrefix)
             throws IOException {
         BufferedWriter[] writers = new BufferedWriter[numberOfChannels];
+        String[] electrodeLabels;
+        
+        if (numberOfChannels == 8) {
+            electrodeLabels = ELECTRODE8_LABELS;
+        } else if (numberOfChannels == 16) {
+            electrodeLabels = ELECTRODE16_LABELS;
+        } else {
+            electrodeLabels = ELECTRODE19_LABELS;
+        }
+        
         for (int i = 0; i < numberOfChannels; i++) {
-            File outFile = new File(outputDirectory, outputPrefix + ELECTRODE_LABELS[i] + ".DAT");
+            File outFile = new File(outputDirectory, outputPrefix + electrodeLabels[i] + ".DAT");
             writers[i] = new BufferedWriter(new FileWriter(outFile));
         }
         return writers;
